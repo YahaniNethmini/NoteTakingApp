@@ -54,6 +54,7 @@ class _AddEditNoteScreenState extends State<AddEditNoteScreen> {
         ),
       ),
       body: Form(
+          key: _formKey,
           child: Column(
             children: [
               Padding(
@@ -90,6 +91,59 @@ class _AddEditNoteScreenState extends State<AddEditNoteScreen> {
                         }
                       },
                     ),
+                    Padding(
+                        padding: EdgeInsets.all(16),
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: _colors.map((color) {
+                              return GestureDetector(
+                                onTap: () =>
+                                    setState(() => _selectedColor = color),
+                                child: Container(
+                                  width: 40,
+                                  height: 40,
+                                  margin: EdgeInsets.only(right: 8),
+                                  decoration: BoxDecoration(
+                                    color: color,
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color:  _selectedColor == color
+                                          ? Colors.black45
+                                          : Colors.transparent,
+                                      width: 2,
+                                    )
+                                    ),
+                                  ),
+                                );
+                            }).toList(),
+                          ),
+                        ),
+                    ),
+                    InkWell(
+                      onTap: (){
+                        _saveNote();
+                        Navigator.pop(context);
+                      },
+                      child: Container(
+                        margin: EdgeInsets.all(20),
+                        padding: EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Color(0xFF50C878),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Center(
+                          child: Text(
+                            "Save Note",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
                   ],
                 ),
               )
@@ -97,5 +151,27 @@ class _AddEditNoteScreenState extends State<AddEditNoteScreen> {
           )
       ),
     );
+  }
+
+  Future<void> _saveNote() async {
+    if (_formKey.currentState!.validate()) {
+      final note = Note(
+          id: widget.note?.id,
+          title: _titleController.text,
+          content: _contentController.text,
+          color: _selectedColor.value.toString(),
+          dateTime: DateTime.now().toString()
+      );
+
+      if (widget.note == null) {
+        await _databaseHelper.insertNote(note);
+      } else {
+        await _databaseHelper.updateNote(note);
+      }
+
+      if (mounted) {  // Add this check
+        Navigator.pop(context);
+      }
+    }
   }
 }
