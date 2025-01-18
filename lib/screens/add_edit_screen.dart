@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:noteapp/screens/home_screen.dart';
 
 import '../model/notes_model.dart';
 import '../services/database_helper.dart';
@@ -121,9 +122,17 @@ class _AddEditNoteScreenState extends State<AddEditNoteScreen> {
                         ),
                     ),
                     InkWell(
-                      onTap: (){
-                        _saveNote();
-                        Navigator.pop(context);
+                      onTap: () async {  // Make this async
+                        await _saveNote();  // Wait for save to complete
+                        if (mounted) {
+                          // Replace current screen with home screen instead of pushing new one
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => HomeScreen(),
+                            ),
+                          );
+                        }
                       },
                       child: Container(
                         margin: EdgeInsets.all(20),
@@ -143,7 +152,7 @@ class _AddEditNoteScreenState extends State<AddEditNoteScreen> {
                           ),
                         ),
                       ),
-                    )
+                    ),
                   ],
                 ),
               )
@@ -167,10 +176,6 @@ class _AddEditNoteScreenState extends State<AddEditNoteScreen> {
         await _databaseHelper.insertNote(note);
       } else {
         await _databaseHelper.updateNote(note);
-      }
-
-      if (mounted) {  // Add this check
-        Navigator.pop(context);
       }
     }
   }

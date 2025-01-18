@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:noteapp/screens/view_note_screen.dart';
 import 'package:noteapp/services/database_helper.dart';
 
 import '../model/notes_model.dart';
@@ -52,6 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return "${dt.day}/${dt.month}/${dt.year}, ${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString()
         .padLeft(2, '0')}";
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,12 +79,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
             return GestureDetector(
               onTap: () async {
-                // await Navigator.push(
-                //     context,
-                //     MaterialPageRoute(
-                //         builder: (context) => ViewNoteScreen(note: note)
-                //     )
-                // );
+                await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => ViewNoteScreen(note: note)
+                    )
+                );
                 _loadNotes();
               },
               child: Container(
